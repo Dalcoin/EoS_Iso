@@ -1,30 +1,35 @@
-       program denx
-
+       program denx 
        implicit real*8 (a-h,o-z)
-       dimension der(100), esym(100)
+
+    
+       common/main/n,n_opt,mic,isnm,isym_emp,k0,rho0,fff
+       common/eos/xkf(100),den(100),e0(100),e1(100),esym(100)
+        
+       dimension der(100)
        dimension outpt1(100), outpt2(100), coeff1(4,100), coeff2(4,100)
        dimension outpt3(100), outpt4(100), coeff3(4,100), coeff4(4,100)
        dimension desym(100), de0(100), de1(100), prse0(100), prse1(100)
-       dimension P(100), den(100), rho(100), rhog(100)
-       dimension xkf(100), e0(100), e1(100), prsesym(100)
+       dimension P(100),  rho(100), rhog(100),prsesym(100)
        dimension e0d(100), e1d(100)
        dimension xkf0(100), xkf1(100), den0(100), den1(100)
        dimension de0dr(100), ee(100), ee2(100)
        dimension outpt5(100), coeff5(100)
-
+         
        pi = 3.14159265
        pi2 = pi*pi 
 
        open(unit=120, file='values.don')
        open(unit=140, file='data.srt')
 
-       read(120,*) n, n_opt,mic,isnm,isym_emp,k0,rho0,fff
-       n2=n-1
+       read(120,*) n,n_opt,mic,isnm,isym_emp,k0,rho0,fff
 
+       n2=n-1
        den_s = 0.0d0
        den_e = 1.8d0
 
-
+c      n_opt: read in option: 
+c             0: all e/a are in the same file
+c             1: sym and nasym e/a are in different files
 
        if(n_opt .eq. 0) then
           open(unit=510, file='ex.don')
@@ -83,8 +88,15 @@ c         phenom_eos_section
      1    (beta/(sigma + 1.d0))*(rat)**(sigma) 
            
           
+c         mic: microscopic EoS         
+c         mic = 1 : EoS is completely microscopic
+c         mic = 0 : EoS options for phenomenological EoS
+
           if(mic.eq.1) go to 3355 
           
+c         isnm = 1: symmetric matter EoS is phenomenological choice 1
+c         isnm = 0: symmetric matter EoS is phenomenological choice 2
+ 
              if(isnm.eq.1) then
                 e0(i)=ee(i) 
              else 
@@ -96,6 +108,11 @@ c                e0(i)=0.d0
 c             end if
                
              pt=22.d0*rat**gam + 12.d0*rat**(2.d0/3.d0)      
+
+c            isym_emp = 0: esym is partially phenomenological
+c                          the neutron matter part is microcopic
+c            isym_emp = 1: esym is completely phenomenological 
+
              if(isym_emp.eq.0) then
                 esym(i)= e1(i)-e0(i) 
              else 
@@ -178,25 +195,29 @@ c             end if
 1000   format('                                         ')         
 6734   format('---------------------------Pressures---------------------
      1-------|')
-4545   format('-------------------------L-Value-------------------------
-     1-------|')
-4646   format('----------------K-Value------------------|')
-3636   format('---------------K-0-Value------------------|')
-3737   format('---------------K-D-Value------------------|')
-4747   format('--------------E-Sat-Value----------------|')
-4848   format('--------------R-Sat-Value----------------|')
-4949   format('--------------P-Sat-Value----------------|')
+4545   format('-------L-Value-------|')
+4646   format('-------K-Value-------|')
+3636   format('------K-0-Value------|')
+3737   format('------K-D-Value------|')
+4747   format('-----E-Sat-Value-----|')
+4848   format('-----R-Sat-Value-----|')
+4949   format('-----P-Sat-Value-----|')
 
-5050   format('------------Esym-Sat-Value----------------|')
-5151   format('------------Esym-Den-Value----------------|')
+5050   format('----Esym-Sat-Value---|')
+5151   format('----Esym-Den-Value---|')
 
 
 8629   format('     Den      P0       P1',       
      1       '       Psym      E0       E1       Esym')   
 
-0001   format('------------Isoscalar-Values-------------|')
-1111   format('------------Isovector-Values-------------|')
-2222   format('------------Tabulated-Values-------------|')
+0001   format('------------------------Isoscalar-Values-----------------
+     1-------|')
+
+1111   format('------------------------Isovector-Values-----------------
+     1-------|')
+
+2222   format('------------------------Tabulated-Values-----------------
+     1-------|')
         
        if(n_opt .eq. 0) then
           write(140,6734)
@@ -267,7 +288,51 @@ c             end if
      1                    esym0, esym1
 
        end if
+
+
+       call parab()
+
        stop
        
        end program
 
+
+
+       subroutine parab()
+       implicit real*8(a-h,o-z)
+
+       common/main/n,n_opt,mic,isnm,isym_emp,k0,rho0,fff
+       common/eos/xkf(100),den(100),e0(100),e1(100),esym(100)
+        
+       dimension :: ea(6,100), alp(6)
+
+       open(777,file='parab.don')
+       
+       pi=3.14159d0
+       pi2 = pi*pi
+
+       do i=1,6 
+          alp(i) = 0.d0 + 0.2d0 * (i-1)
+       end do
+
+       do j=1,6
+          do i=1,n
+             ea(j,i) = e0(i)+esym(i)*alp(j)**2 
+          end do
+       end do
+
+       write(777,*) '   den      ea0       ea2       ea4       ea6
+     1ea8       ea1'
+       do i=1,n
+          write(777,1414) den(i), ea(1,i), ea(2,i),
+     1                    ea(3,i), ea(4,i), ea(5,i), ea(6,i)
+
+       end do
+
+1414   format(2x,F8.4,2x,F8.4,2x,F8.4,2x,F8.4,2x,F8.4,
+     1        2x,F8.4,2x,F8.4)
+
+       end subroutine
+              
+       
+        
