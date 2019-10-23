@@ -1,0 +1,38 @@
+n_control  iphen_print  iso_calc  iso_print  parab_print 
+1          0            1         1          0
+
+n   mic  isnm  isym_emp  k0   rho0
+11  1    0     0         220  0.16
+
+
+Run Sequence
+
+n_control:     Set to 1
+
+iphen_print:   Set to: 1 for printing all phenomenological e0 values
+                       0 do not print 
+
+iso_calc:      Set to: 1 for calculating isovector and isoscalar properties 
+                       0 do not calculate
+
+iso_print:     Set to: 1 to print iosvector and isoscalar properties (note iso_calc must also be 1)
+                       0 do not print 
+       
+parab_print:   Set to: 1 to print EoS for incrementing isospin asymmetry
+                       0 do not print
+                      
+
+Iso Sequence
+
+n:             number of points in 'ex.don' file
+ 
+mic:           1 for microsopic EoS only, 0 for phenomenological eoS
+ 
+
+if mic = 0 then
+
+isnm:          1 for k0 dependent symmetric EoS, 0 for constant Phenom. symmetric EoS
+isym_emp:      1 for emperical symmetry energy, 0 for derived symmetry energy     
+k0:            Can be any value, usually 220 or 260
+rho0:          Saturation density for Phenom. EoS. (usually 0.16)
+
