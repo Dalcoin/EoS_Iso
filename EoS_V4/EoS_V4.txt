@@ -1,0 +1,13 @@
+EoS_V4 Folder
+
+Contains:
+   Programs: 
+      Params.f
+      run.sh
+   Data-Input:
+      ex.don
+      values.don
+   Data-Output:
+      parab.don
+      data.srt
+      
