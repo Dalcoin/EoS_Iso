@@ -11,3 +11,12 @@ Contains:
       parab.don
       data.srt
       
+Self contained folder. 
+
+Complilation:
+
+chmod +x run.sh
+
+Running:
+
+./run.sh
