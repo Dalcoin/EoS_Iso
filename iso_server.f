@@ -11,16 +11,16 @@
        common/pressure/prse0(100),prse1(100),prsesym(100)    
        common/isovals_e/rhoo,e0o,rho1,prs0,prs02,esym0,esym1
        common/isovals_de/bigL,bigK,bigKD,bigK0
-       
-c       open(000,file='dump.don')       
+
+c       open(000,file='dump.don')
 
 c      read in from .py pipeline      
-       read(*,*) n_control, iphen_print, iso_calc, iso_print, 
+       read(*,*) n_control, iphen_print, iso_calc, iso_print,
      1           parab_print
-        
+
 c      const_main
        call input_constants()
-         
+
 c      const_lvl 1 & 2
        call eos_constants()
        call read_in()
